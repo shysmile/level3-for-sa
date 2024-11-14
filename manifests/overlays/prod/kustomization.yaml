@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - pvc.yaml
+
+patches:
+  - path: patches/deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: 82075788
+
+# ConfigMap 생성 (필요한 경우)
+configMapGenerator:
+  - name: 82075788-configmap
+    files:
+      - application.yml
+

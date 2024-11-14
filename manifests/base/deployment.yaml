@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-azurefile
+  labels:
+    app: nginx
+spec:
+  replicas: 1  # 원하는 레플리카 수
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: cepgbaseacr.azurecr.io/ingress-nginx-controller:latest  # ACR에서 이미지 가져오기
+          ports:
+            - containerPort: 80    # HTTP 포트
+            - containerPort: 443   # HTTPS 포트 (필요시 추가)
+          volumeMounts:
+            - mountPath: /mnt/azurefile  # PVC로 정의한 볼륨을 이 경로에 마운트
+              name: azurefile
+      volumes:
+        - name: azurefile
+          persistentVolumeClaim:
+            claimName: azurefile-pvc  # PVC와 연결 (PVC 파일에 정의된 이름과 동일해야 함)
+
+      imagePullSecrets:
+        - name: acr-secret  # ACR 인증 정보를 담은 시크릿
+
